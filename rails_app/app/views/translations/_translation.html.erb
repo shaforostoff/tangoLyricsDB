@@ -1,6 +1,6 @@
 <tr>
   <td><%= render partial: 'translations/active_icon', object: translation, as: 'translation' %></td>
-	<td class='search_column'><%= link_to raw("<i class='fa fa-link'></i>"), translation.link.gsub(/youtube.com.*chan.*watch/,"youtube.com/watch"), :class => 'btn btn-xs btn-primary', data_toggle: 'tooltip', 'data-placement' => 'right', title: URI.decode(translation.link.gsub(/youtube.com.*chan.*watch/,"youtube.com/watch")), rel: :tooltip, :target => "_blank" %></td>
+	<td class='search_column'><%= link_to raw("<i class='fa fa-link'></i>"), translation.link.gsub(/youtube.com.*chan.*watch/,"youtube.com/watch").gsub(/tangowiki.org.*Lyrics:/,"tangowiki.org/wiki/"), :class => 'btn btn-xs btn-primary', data_toggle: 'tooltip', 'data-placement' => 'right', title: URI.decode(translation.link.gsub(/youtube.com.*chan.*watch/,"youtube.com/watch").gsub(/tangowiki.org.*Lyrics:/,"tangowiki.org/wiki/")), rel: :tooltip, :target => "_blank" %></td>
 	
 	<% if controller?('translations') %>
 	<td><%= link_to translation.song.title, song_path(translation.song) %></td>
