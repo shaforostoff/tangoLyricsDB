@@ -2,12 +2,12 @@ class Song < ActiveRecord::Base
   include Filterable
   
   belongs_to :genre, counter_cache: true
-  has_many :translations, -> { includes([:language, :song]).order('languages.iso') }, dependent: :delete_all
+  has_many :translations, -> { includes([:language, :song]).order('languages.iso, translator_id') }, dependent: :delete_all
   has_many :languages, through: :translations
   
   # Scopes
-  default_scope { order('title') }
-  
+  default_scope { order('translations_count DESC, title') }
+
   scope :title_has, -> (title) { where("lower(search_title) like ?", "%#{I18n.transliterate(title.downcase)}%") }
   scope :composer_has, -> (composer) { where("lower(composer) like ?", "%#{I18n.transliterate(composer.downcase)}%") }
   scope :lyricist_has, -> (lyricist) { where("lower(lyricist) like ?", "%#{I18n.transliterate(lyricist.downcase)}%") }
