@@ -2,7 +2,7 @@ class Genre < ActiveRecord::Base
   has_many :songs
   
   # Scopes
-  default_scope { order('name') }
+  default_scope { order('songs_count DESC, name') }
   
   # Validations
   validates :name,
