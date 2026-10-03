@@ -38,12 +38,15 @@
         <p class="spacer">&nbsp;</p>
       </div>
       <div id="sidebar" class="col-12 col-sm-4 col-md-3">
-        <div id="search">
-          <%= render 'layouts/search' %>
-        </div>
-        <div id="stats">
-          <%= render 'layouts/stats' %>
-        </div>
+        <%# Same on every page; expired by ApplicationRecord whenever data changes %>
+        <% cache sidebar_cache_key, expires_in: 1.hour do %>
+          <div id="search">
+            <%= render 'layouts/search' %>
+          </div>
+          <div id="stats">
+            <%= render 'layouts/stats' %>
+          </div>
+        <% end %>
       </div>
       <p class="spacer">&nbsp;</p>
     </div>

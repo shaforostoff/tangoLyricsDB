@@ -3,7 +3,7 @@ class SongsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   
   def index
-    @songs = Song.includes(:genre, :translations).filter_by(filter_params)
+    @songs = Song.includes(:genre).filter_by(filter_params)
     @songs = @songs.distinct
     
     @resultsCount = @songs.count.nil? ? 0 : @songs.count

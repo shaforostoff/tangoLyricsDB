@@ -5,7 +5,7 @@
   <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
   <dd class="col-sm-9"><%= @genre.name %></dd>
   <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:count) %>:</strong></dt>
-  <dd class="col-sm-9"><%= @genre.songs.size %></dd>
+  <dd class="col-sm-9"><%= @genre.songs_count %></dd>
   <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:search) %>:</strong></dt>
   <dd class="col-sm-9"><%= render partial: 'shared/search_icon', locals: { f: @genre } %></dd>
 </dl>

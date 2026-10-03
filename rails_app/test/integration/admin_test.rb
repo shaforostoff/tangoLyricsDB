@@ -61,6 +61,20 @@ class AdminTest < ActionDispatch::IntegrationTest
     assert_select "tbody tr", 1
   end
 
+  test "refreshes the cached sidebar after a change" do
+    caching, cache = ActionController::Base.perform_caching, Rails.cache
+    ActionController::Base.perform_caching = true
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+
+    get root_path
+    assert_select "#stats h4", "#{Song.count} songs"
+    post songs_path, params: { song: { title: "cached title", genre_id: genres(:one).id, composer: "some composer", lyricist: "some lyricist" } }
+    get root_path
+    assert_select "#stats h4", "#{Song.count} songs"
+  ensure
+    ActionController::Base.perform_caching, Rails.cache = caching, cache
+  end
+
   test "signs out" do
     delete destroy_user_session_path
     get new_song_path

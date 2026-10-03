@@ -1,13 +1,6 @@
-
-<h4>
-	<%= Song.count.nil? ? 0 : Song.count %> songs
-</h4>
-<h4>
-	<%= Translation.count.nil? ? 0 : Translation.count %> translations
-</h4>
-<h4>
-	last Song: <%= Song.unscoped.last.nil? ? "N/A" : link_to(Song.unscoped.last.title, Song.unscoped.last) %>
-</h4>
-<h4>
-	last Translation: <%= (Translation.unscoped.last.nil? or Translation.unscoped.last.song.nil?) ? "N/A" : link_to(Translation.unscoped.last.song.title, Translation.unscoped.last.song) %>
-</h4>
+<% last_song = Song.unscoped.last %>
+<% last_translation_song = Translation.unscoped.includes(:song).last&.song %>
+<h4><%= Song.count %> songs</h4>
+<h4><%= Translation.count %> translations</h4>
+<h4>last Song: <%= last_song ? link_to(last_song.title, last_song) : "N/A" %></h4>
+<h4>last Translation: <%= last_translation_song ? link_to(last_translation_song.title, last_translation_song) : "N/A" %></h4>

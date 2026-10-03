@@ -7,6 +7,9 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :memory_store, { size: 16.megabytes }
 
+  # YJIT costs ~30 MB of RAM; pages render in a few ms without it
+  config.yjit = ENV["RAILS_YJIT"] == "true"
+
   # Digest-stamped assets can be cached forever.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 

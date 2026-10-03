@@ -19,7 +19,7 @@
 				<td class='search_column'><%= link_to raw("<i class='fa fa-link'></i>"), translator.site_link, :class => 'btn btn-sm btn-primary', 'data-bs-toggle' => 'tooltip', 'data-bs-placement' => 'right', title: URI::RFC2396_PARSER.unescape(translator.site_link), rel: :tooltip, :target => "_blank" %></td>
 				<td><%= link_to translator.site_name, translator_path(translator)%></td>
         <td><%= translator.name %></td>
-        <td><%= translator.translations.length %></td>
+        <td><%= translator.translations_count %></td>
         <td class='action_column'>
 			    <%= link_to raw('<i class="fa fa-eye"></i>'),
 			                translator_path(translator),  :class => 'btn btn-sm btn-outline-secondary' %>
