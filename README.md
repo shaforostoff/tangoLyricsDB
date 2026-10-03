@@ -44,9 +44,9 @@ The database schema is created (or migrated) on start.
 
 ### Backups
 
-`TTdb_dump.sh` dumps the database into `backup/` and thins out old dumps. Run it nightly from cron:
+`TTdb_dump.sh` dumps the database into `backup/`. Run it monthly from cron:
 
-    0 3 * * * /home/ubuntu/tangoLyricsDB/TTdb_dump.sh
+    0 3 1 * * /home/ubuntu/tangoLyricsDB/TTdb_dump.sh
 
 ## Adding an admin
 

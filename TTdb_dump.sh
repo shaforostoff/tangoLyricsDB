@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Nightly database backup, run from cron on the VM
+# Monthly database backup, run from cron on the VM:
+#   0 3 1 * * /home/ubuntu/tangoLyricsDB/TTdb_dump.sh
+# Dumps are ~200 KB each, so all of them are kept.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-NOW=$(date +"%Y-%m-%d")
-docker compose exec -T db pg_dump -U ttdb --format=c ttdb_production > backup/TDB_${NOW}.dump
-
-echo cleanup
-python3 purgeFiles/purgeFiles.py --age=1,2,3,4,5,6,7,8,16,32,64,128,256,384,512,640,768,896,1024,1152,1280,1408,1536,1664,1792,1920,2048 --directory=backup --pattern="*.dump" --force
+mkdir -p backup
+docker exec tangolyricsdb-db-1 pg_dump -U ttdb --format=c ttdb_production > backup/TDB_$(date +%Y-%m-%d).dump
