@@ -37,7 +37,7 @@ gem 'unicorn', '~> 5.5.0'
 gem 'byebug', group: [:development, :test]
 
 # Ruby
-ruby "2.5.1"
+ruby "2.5.8"
 
 group :test do
   gem 'ZenTest'

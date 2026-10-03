@@ -1,6 +1,6 @@
 # Based on https://semaphoreci.com/community/tutorials/dockerizing-a-ruby-on-rails-application
 
-FROM ruby:2.5.1-slim
+FROM ruby:2.5.8-slim
 
 ARG APP_PATH=/var/www/ttdb
 
