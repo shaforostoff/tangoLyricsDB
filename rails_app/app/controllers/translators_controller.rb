@@ -25,8 +25,8 @@ class TranslatorsController < ApplicationController
         format.html { redirect_to @translator, notice: 'Translator was successfully created' }
         format.json { render :show, status: :created, location: @translator }
       else
-        format.html { render :new }
-        format.json { render json: @translator.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @translator.errors, status: :unprocessable_content }
       end
     end
   end
@@ -37,8 +37,8 @@ class TranslatorsController < ApplicationController
         format.html { redirect_to @translator, notice: 'Translator was successfully updated' }
         format.json { render :show, status: :ok, location: @translator }
       else
-        format.html { render :edit }
-        format.json { render json: @translator.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @translator.errors, status: :unprocessable_content }
       end
     end
   end
@@ -46,7 +46,7 @@ class TranslatorsController < ApplicationController
   def destroy
     @translator.destroy
     respond_to do |format|
-      format.html { redirect_to translators_url, notice: 'Translator was successfully destroyed' }
+      format.html { redirect_to translators_url, notice: 'Translator was successfully destroyed', status: :see_other }
       format.json { head :no_content }
     end
   end

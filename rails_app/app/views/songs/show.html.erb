@@ -1,30 +1,29 @@
 <%- model_class = Song -%>
 <% title @song.title %>
 
-<dl class="dl-horizontal">
-  <dt><strong><%= model_class.human_attribute_name(:title) %>:</strong></dt>
-  <dd><%= @song.title %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:genre) %>:</strong></dt>
-  <dd><%= @song.genre.blank? ? "..." : link_to(@song.genre.name, @song.genre) %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:composer) %>:</strong></dt>
-  <dd><%= render partial: 'composer_search', locals: { song: @song } %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:lyricist) %>:</strong></dt>
-  <dd><%= render partial: 'lyricist_search', locals: { song: @song } %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:year) %>:</strong></dt>
-  <dd><%= render partial: 'year_search', locals: { song: @song } %></dd>
-  <dt><strong><%= 'YouTube' %>:</strong></dt>
-  <dd><%= render partial: 'youtube_icon', locals: { song: @song } %></dd>
+<dl class="row">
+  <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:title) %>:</strong></dt>
+  <dd class="col-sm-9"><%= @song.title %></dd>
+  <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:genre) %>:</strong></dt>
+  <dd class="col-sm-9"><%= @song.genre.blank? ? "..." : link_to(@song.genre.name, @song.genre) %></dd>
+  <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:composer) %>:</strong></dt>
+  <dd class="col-sm-9"><%= render partial: 'composer_search', locals: { song: @song } %></dd>
+  <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:lyricist) %>:</strong></dt>
+  <dd class="col-sm-9"><%= render partial: 'lyricist_search', locals: { song: @song } %></dd>
+  <dt class="col-sm-3 text-sm-end"><strong><%= model_class.human_attribute_name(:year) %>:</strong></dt>
+  <dd class="col-sm-9"><%= render partial: 'year_search', locals: { song: @song } %></dd>
+  <dt class="col-sm-3 text-sm-end"><strong><%= 'YouTube' %>:</strong></dt>
+  <dd class="col-sm-9"><%= render partial: 'youtube_icon', locals: { song: @song } %></dd>
 </dl>
 
 <div class="form-actions">
   <%= link_to '<i class="fa fa-chevron-left"></i> '.html_safe + t('.back', :default => t("helpers.links.back")),
-              songs_path, :class => 'btn btn-default'  %>
+              songs_path, :class => 'btn btn-outline-secondary'  %>
   <%= link_to '<i class="fa fa-edit"></i> '.html_safe + t('.edit', :default => t("helpers.links.edit")),
               edit_song_path(@song), :class => 'btn btn-warning' %>
   <%= link_to '<i class="fa fa-trash"></i> '.html_safe + t('.destroy', :default => t("helpers.links.destroy")),
               song_path(@song),
-              :method => 'delete',
-              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              data: { turbo_method: :delete, turbo_confirm: t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
               :class => 'btn btn-danger' %>
 </div>
 
@@ -34,6 +33,6 @@
 <%= render "translations/translation_footer" %>
  
 <h2>Add a translation:</h2>
-<%= form_for [@song, @song.translations.build], :html => { :class => 'form-horizontal' } do |f| %>
+<%= form_for [@song, @song.translations.build], :html => {} do |f| %>
 	<%= render "translations/form", :f => f %>
 <% end %>

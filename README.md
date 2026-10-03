@@ -1,74 +1,65 @@
 # Tango Translation Database
 
-This is the project that underlies the Tango Translation Database on www.tangotranslation.com
+This is the project that underlies the Tango Translation Database on https://tangotranslations.org
 
 I developed it to teach myself Ruby on Rails. Read more about its development on my blog http://alexvicegrab.github.io
 
+## Stack
+
+* Ruby 4.0, Rails 8.1 (Propshaft + importmap, Turbo; no Node toolchain), Devise, Kaminari, Chartkick
+* PostgreSQL 18
+* Puma behind [Thruster](https://github.com/basecamp/thruster), which also obtains Let's Encrypt certificates
+* Bootstrap 5 and Font Awesome from the jsDelivr CDN
+* Everything runs with Docker Compose on a single GCP e2-micro VM (free tier)
+
 ## Deploying
 
-To deploy a copy of this project, you must follow these steps.
+Set up a GCP account and a project and create a GCP compute instance by following the `./terraform/instance/README.md`.
+Install `docker.io` and `docker-compose-v2` on it and clone this repository.
 
-### Instance
+### Secrets
 
-Set up a GCP account and a project and create a GCP compute instance by following the `./terraform/instance/README.md`
+Copy `.env.example` to `.env` next to `docker-compose.yml` and fill it in:
 
-### Env vars
+    DB_PASSWORD=...                  # any random string
+    SECRET_KEY_BASE=...              # openssl rand -hex 64
+    GMAIL_USERNAME=...               # I use tangotranslation@gmail.com
+    GMAIL_PASSWORD=...               # a Gmail app password
+    CANONICAL_HOST=tangotranslations.org
+    TLS_DOMAIN=tangotranslations.org,www.tangotranslations.org
 
-Make sure you export a set of environmental variables (ideally place these into a `~/envvars/ttdb.sh` file and source them)
+Leave `CANONICAL_HOST` and `TLS_DOMAIN` empty until DNS points at the VM; the site is then served over plain HTTP.
 
-    export RAILS_ENV=production
-    export SECRET_KEY_BASE=<a secret key base>  # The output of rake secret
-    export GMAIL_USERNAME=<your Gmail username>  # I use tangotranslation@gmail.com
-    export GMAIL_PASSWORD=<your Gmail password>
-    export TTDB_PATH=<Where you downloaded the TTDB git repository> # I typically use ~/tangoLyricsDB
+### Run
 
-### Python fabric
+    docker compose up -d --build
 
-To install the components on the server we will be using Python Fabric 1.x (2.x has a very different API)
+The database schema is created (or migrated) on start.
 
-First we will create a python 2.7 environment:
+### Restore a backup
 
-    virtualenv ./venv
+    docker compose up -d db
+    docker compose exec -T db pg_restore --clean --if-exists --no-acl --no-owner -U ttdb -d ttdb_production < backup/TDB_2026-10-03.dump
+    docker compose up -d
 
-    source ./venv/bin/activate
+### Backups
 
-    pip install --upgrade pip
+`TTdb_dump.sh` dumps the database into `backup/` and thins out old dumps. Run it nightly from cron:
 
-    pip install -r requirements.txt
+    0 3 * * * /home/ubuntu/tangoLyricsDB/TTdb_dump.sh
 
-Then we can run the necessary installation scripts:
-
-    ./venv/bin/fab -H ubuntu@$(terraform output -state=./terraform/instance/terraform.tfstate ip) deploy
-
-
-## Local setup
-
-Create the relevant docker volumes
-
-    docker volume create --name postgres-vol
-
-Precompile assets (you will need `ruby` and `rake` to do this), in to provide them with the :
-
-    bundle exec rake assets:precompile
-
-Build and run docker-compose thus:
-
-    docker-compose build
-    docker-compose up -d
-
-We can create and restore a specific database:
-    
-    export BACKUP="TDB_2019-03-03"
-    docker-compose run app rake db:create
-    docker exec -i tangolyricsdb_db_1 pg_restore --clean --no-acl --no-owner -U postgres -d tangoLyricsDB_${RAILS_ENV} < ./backup/${BACKUP}.dump
-
-## Adding a translator
+## Adding an admin
 
 Connect to the VM that is running the app.
 
-    docker exec -it tangolyricsdb_app_1 rails c
+    docker compose exec web bin/rails console
 
 This will setup a Rails console prompt.
 
-    @user = User.new(:email => 'email@example.com', :password => 'password', :password_confirmation => 'password')
-    @user.save
+    User.create!(email: 'email@example.com', password: 'password', password_confirmation: 'password')
+
+## Tests
+
+With the stack running:
+
+    docker compose run --rm -e RAILS_ENV=test web bin/rails db:prepare test

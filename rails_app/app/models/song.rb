@@ -1,8 +1,8 @@
-class Song < ActiveRecord::Base
+class Song < ApplicationRecord
   include Filterable
   
-  belongs_to :genre, counter_cache: true
-  has_many :translations, -> { includes([:language, :song]).order('languages.iso, translator_id') }, dependent: :delete_all
+  belongs_to :genre, counter_cache: true, optional: true
+  has_many :translations, -> { includes([:language, :song, :translator]).order('languages.iso, translator_id') }, dependent: :delete_all
   has_many :languages, through: :translations
   
   # Scopes
@@ -30,7 +30,7 @@ class Song < ActiveRecord::Base
     
   validates :year,
   allow_nil: true,
-  numericality: {only_integer: true, greater_than_or_equal_to: 1866, less_than_or_equal_to: 2014}
+  numericality: {only_integer: true, greater_than_or_equal_to: 1866, less_than_or_equal_to: ->(_) { Date.current.year } }
   
   validates :composer,
   presence: true,

@@ -1,17 +1,17 @@
-class Translation < ActiveRecord::Base
+class Translation < ApplicationRecord
   include Filterable
   include UrlHelper
   
-  belongs_to :song, counter_cache: true
-  belongs_to :language, counter_cache: true
-  belongs_to :translator, counter_cache: true
+  belongs_to :song, counter_cache: true, optional: true
+  belongs_to :language, counter_cache: true, optional: true
+  belongs_to :translator, counter_cache: true, optional: true
   
   # Scopes
   # Next line overrides scoping in song Model, hence commented out
   # default_scope { order('created_at') }
   
-  scope :language_is, -> (language_id) { Translation.where("language_id = ?", language_id) } 
-  scope :translator_is, -> (translator_id) { Translation.where("translator_id = ?", translator_id) } 
+  scope :language_is, -> (language_id) { where("language_id = ?", language_id) } 
+  scope :translator_is, -> (translator_id) { where("translator_id = ?", translator_id) } 
   
   # Validations
   validates :link,
@@ -42,7 +42,7 @@ class Translation < ActiveRecord::Base
     # Remove white space, replace https with http, unescape "#" character
     unless self.link.blank?
       self.link = self.link.strip
-      self.link = URI.encode(URI.decode(self.link))
+      self.link = URI::RFC2396_PARSER.escape(URI::RFC2396_PARSER.unescape(self.link))
       #self.link = self.link.gsub('https', 'http')
       self.link = self.link.gsub('%23', '#') # Hash incorrectly rendered
       self.link = self.link.gsub('%20', '') # %20 sign creeping into links (e.g. YouTube links split at "=" sign)

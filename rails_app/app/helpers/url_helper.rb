@@ -1,41 +1,25 @@
+require "net/http"
+
 module UrlHelper
+  # Returns true if the link looks alive, false if it is gone, nil if it could not be checked
   def check_url(url)
-    
     uri = URI.parse(url)
-    # Domainatrix is better at parsing the path than URI
-    uriD = Domainatrix.parse(url)
     response = nil
-    
     begin
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
-      
-      http.start do |http|
-        # Changed code to get YouTube to work [broke on uri.path, ignored video code]
-        #response = http.head(uri.path.size > 0 ? uri.path : "/")
-        response = http.head(uriD.path.size > 0 ? uriD.path : "/")
+      Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 5, read_timeout: 5) do |http|
+        response = http.head(uri.request_uri)
         Rails.logger.debug "UrlHelper::check_url #{response}"
       end
-      
-    rescue => e 
+    rescue => e
       Rails.logger.warn "UrlHelper::check_url error #{e}"
       return nil
     end
 
-    # Handle redirects if you need to
     if response.is_a?(Net::HTTPRedirection)
-      if response.code == '303'
-        # Necessary for YouTube user redirects
-        return true
-      else
-        return false
-      end
+      # 303 is often used for redirects to the translation itself
+      return response.code == "303"
     end
 
-    if response.code == '404'
-      return false
-    end
-    #Otherwise...
-    return  true
+    response.code != "404"
   end
 end

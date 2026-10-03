@@ -56,7 +56,7 @@ class SongTest < ActiveSupport::TestCase
     assert_not @song.save
   end
   test "should not save song with a large year" do
-    @song.year = 2015
+    @song.year = Date.current.year + 1
     assert_not @song.save
   end
   

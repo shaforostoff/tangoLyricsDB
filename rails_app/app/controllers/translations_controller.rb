@@ -5,11 +5,11 @@ class TranslationsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show, :create, :check_link]
   
   def inactive
-    @translations = Translation.includes([:translator, :language, :song]).where(active: [false, nil]).order(['active', 'songs.title'])
+    @translations = Translation.includes([:translator, :language, :song]).where(active: [false, nil]).references(:song).order(['active', 'songs.title'])
   end
   
   def index
-    @translations = Translation.includes([:translator, :language, :song]).filter( params.slice(:language_is, :translator_is )).order('songs.title')
+    @translations = Translation.includes([:translator, :language, :song]).filter_by(params.permit(:language_is, :translator_is).to_h).references(:song).order('songs.title')
     
     @resultsCount = @translations.count.nil? ? 0 : @translations.count
     
@@ -30,7 +30,7 @@ class TranslationsController < ApplicationController
       else
         flash[:error] = @translation.errors.full_messages.to_sentence
         format.html { redirect_to @song }
-        format.json { render json: @translation.errors, status: :unprocessable_entity }
+        format.json { render json: @translation.errors, status: :unprocessable_content }
       end
     end
   end
@@ -41,7 +41,7 @@ class TranslationsController < ApplicationController
   def check_link
     # @translation.check_link performed inherently during save validation
     @translation.save 
-    redirect_to(:back)
+    redirect_back fallback_location: song_path(@song), status: :see_other
   end
   
   def update
@@ -51,8 +51,8 @@ class TranslationsController < ApplicationController
         format.json { render :show, status: :ok, location: @translation }
       else
         flash[:error] = @translation.errors.full_messages.to_sentence
-        format.html { render :edit }
-        format.json { render json: @translation.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @translation.errors, status: :unprocessable_content }
       end
     end
   end
@@ -60,7 +60,7 @@ class TranslationsController < ApplicationController
   def destroy
     @translation.destroy
     respond_to do |format|
-      format.html { redirect_to @song, notice: 'Translation was successfully destroyed' }
+      format.html { redirect_to @song, notice: 'Translation was successfully destroyed', status: :see_other }
       format.json { head :no_content }
     end
   end

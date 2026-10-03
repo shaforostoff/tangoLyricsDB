@@ -1,28 +1,14 @@
-<nav id="footer" class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+<nav id="footer" class="navbar fixed-bottom bg-body-tertiary border-top py-1">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#TTD_footer_navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+    <div>
+      <%= paginate @songs if @songs && (current_page?(songs_path) || current_page?(root_path)) %>
+      <%= paginate @translations if @translations && current_page?(translations_path) %>
     </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="TTD_footer_navbar">
-			<ul class="nav navbar-nav">
-				<%= paginate @songs, theme: 'twitter-bootstrap-3', :pagination_class => 'pagination-sm' if ( current_page?(songs_path) || current_page?(root_path)) %>
-				<%= paginate @translations, theme: 'twitter-bootstrap-3', :pagination_class => 'pagination-sm' if current_page?(translations_path) %>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-			<div class="btn-group">
-				<button type="button" class="btn btn-default myiconic"><%= link_to raw('<i class="fa fa-wordpress" style="color:#fb8f3d;"></i>' ), "http://www.eltangoteespera.com/p/dj-sasha-el-tordo-cv.html", target: '_blank' %></button>
-				<button type="button" class="btn btn-default myiconic"><%= link_to raw('<i class="fa fa-github-alt" style="color:#000000;"></i>' ), "https://github.com/alexvicegrab/tangoLyricsDB", target: '_blank' %></button>
-				<button type="button" class="btn btn-default myiconic"><%= link_to raw('<i class="fa fa-facebook-square" style="color:#3b5998;"></i>' ), "https://www.facebook.com/groups/410698905667019/", target: '_blank' %></button>
-				<button type="button" class="btn btn-default myiconic"><%= link_to raw('<i class="fa fa-envelope" style="color:#dd4b39;"></i>' ), "mailto:tangotranslation@gmail.com" %></button>
-				</div>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    <div class="btn-group">
+      <%= link_to raw('<i class="fa fa-wordpress" style="color:#fb8f3d;"></i>'), "http://www.eltangoteespera.com/p/dj-sasha-el-tordo-cv.html", target: '_blank', class: 'btn myiconic', title: 'Blog' %>
+      <%= link_to raw('<i class="fa fa-github-alt" style="color:#000000;"></i>'), "https://github.com/alexvicegrab/tangoLyricsDB", target: '_blank', class: 'btn myiconic', title: 'GitHub' %>
+      <%= link_to raw('<i class="fa fa-facebook-square" style="color:#3b5998;"></i>'), "https://www.facebook.com/groups/410698905667019/", target: '_blank', class: 'btn myiconic', title: 'Facebook' %>
+      <%= link_to raw('<i class="fa fa-envelope" style="color:#dd4b39;"></i>'), "mailto:tangotranslation@gmail.com", class: 'btn myiconic', title: 'Email' %>
+    </div>
+  </div>
 </nav>

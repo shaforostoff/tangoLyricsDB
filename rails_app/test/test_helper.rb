@@ -1,19 +1,18 @@
-ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
-require 'rails/test_help'
-require 'minitest/reporters'
-Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
 
-class ActiveSupport::TestCase
-  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  #
-  # Note: You'll currently still have to declare fixtures explicitly in integration tests
-  # -- they do not yet inherit this setting
-  fixtures :all
-  
-  # Add more helper methods to be used by all tests here...
+# Saving a translation checks its link over HTTP; tests stay offline.
+UrlHelper.prepend(Module.new { def check_url(_url) = true })
+
+module ActiveSupport
+  class TestCase
+    parallelize(workers: :number_of_processors)
+
+    fixtures :all
+  end
 end
 
-class ActionController::TestCase
-  include Devise::TestHelpers
+class ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
 end

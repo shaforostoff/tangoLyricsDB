@@ -1,4 +1,4 @@
-class Translator < ActiveRecord::Base
+class Translator < ApplicationRecord
   has_many :translations
   
   # Scopes

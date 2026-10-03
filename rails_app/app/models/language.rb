@@ -1,4 +1,4 @@
-class Language < ActiveRecord::Base
+class Language < ApplicationRecord
   has_many :translations
   has_many :songs, through: :translations
   

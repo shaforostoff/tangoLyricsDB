@@ -20,6 +20,9 @@ Rails.application.routes.draw do
   get 'about' => 'welcome#about'
   get 'stats' => 'welcome#stats'
   get 'usage' => 'welcome#usage'
+
+  # Health check for uptime monitors
+  get 'up' => 'rails/health#show', as: :rails_health_check
   
   get 'translations' => 'translations#index', :as => :translations
   get 'inactive_translations' => 'translations#inactive', :as => :inactive_translations

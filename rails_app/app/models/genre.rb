@@ -1,4 +1,4 @@
-class Genre < ActiveRecord::Base
+class Genre < ApplicationRecord
   has_many :songs
   
   # Scopes

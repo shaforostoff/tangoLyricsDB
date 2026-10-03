@@ -24,8 +24,6 @@
 # Ignore application configuration
 /config/application.yml
 
-# The public files (built depending on the `SECRET_KEY_BASE` env var)
-rails_app/public
 
 # Terraform files
 *.plan
@@ -41,3 +39,6 @@ venv
 # Temporary files
 *~
 *.pyc
+
+# Server secrets
+.env

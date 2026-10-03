@@ -3,16 +3,7 @@ class SongsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   
   def index
-    @songs = Song.includes(:genre, :translations).filter( params.slice(:title_has,
-    :genre_is, 
-    :composer_has, 
-    :lyricist_has, 
-    :year_min, 
-    :year_max, 
-    :translation_num, 
-    :language_is,
-    :translator_is ))
-    # Do not repeat records
+    @songs = Song.includes(:genre, :translations).filter_by(filter_params)
     @songs = @songs.distinct
     
     @resultsCount = @songs.count.nil? ? 0 : @songs.count
@@ -34,8 +25,8 @@ class SongsController < ApplicationController
         format.html { redirect_to @song, notice: 'Song was successfully created' }
         format.json { render :show, status: :created, location: @song }
       else
-        format.html { render :new }
-        format.json { render json: @song.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @song.errors, status: :unprocessable_content }
       end
     end
   end
@@ -52,8 +43,8 @@ class SongsController < ApplicationController
         format.html { redirect_to @song, notice: 'Song was successfully updated' }
         format.json { render :show, status: :ok, location: @song }
       else
-        format.html { render :edit }
-        format.json { render json: @song.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @song.errors, status: :unprocessable_content }
       end
     end
   end
@@ -61,12 +52,17 @@ class SongsController < ApplicationController
   def destroy
     @song.destroy
     respond_to do |format|
-      format.html { redirect_to songs_path, notice: 'Song was successfully destroyed' }
+      format.html { redirect_to songs_path, notice: 'Song was successfully destroyed', status: :see_other }
       format.json { head :no_content }
     end
   end
   
   private
+  def filter_params
+    params.permit(:title_has, :genre_is, :composer_has, :lyricist_has, :year_min, :year_max,
+      :translation_num, :language_is, :translator_is).to_h
+  end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_song
     @song = Song.find(params[:id])

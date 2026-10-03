@@ -1,40 +1,33 @@
-<nav id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav id="header" class="navbar navbar-expand-md navbar-dark fixed-top">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#TTD_main_navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-			<%= link_to image_tag('favicon.png', height: 48, width: 48), root_path, class: "navbar-brand" %>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
+    <%= link_to image_tag('favicon.png', height: 40, width: 40, alt: "TTdb"), root_path, class: "navbar-brand py-0" %>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#TTD_main_navbar" aria-controls="TTD_main_navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="TTD_main_navbar">
-      <ul class="nav navbar-nav">
-        <li class="<%= 'active' if controller?('songs') %>"><%= link_to "Songs", songs_path %></li>
-        <li class="<%= 'active' if controller?('translators') %>"><%= link_to "Translators", translators_path %></li>
-				<li class="<%= 'active' if controller?('languages') %>"><%= link_to "Languages", languages_path %></li>
-				<li class="<%= 'active' if controller?('genres') %>"><%= link_to "Genres", genres_path %></li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Info<span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li class="<%= 'active' if current_page?(about_path) %>"><%= link_to "About", about_path %></li>
-						<li class="<%= 'active' if current_page?(usage_path) %>"><%= link_to "Usage", usage_path %></li>
-						<li class="<%= 'active' if current_page?(stats_path) %>"><%= link_to "Stats", stats_path %></li>
-						<li class="<%= 'active' if current_page?(inactive_translations_path) %>"><%= link_to "Admin", inactive_translations_path %></li>
-					</ul>
-				</li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-					<% if user_signed_in? %>
-				    <p class="navbar-text">User: <%= current_user.email %></p> <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "devise" %></li>
-				  <% else %>
-						<li><%= link_to "Sign In", new_user_session_path, class: "devise" %></li>
-				  <% end %>
-				</div>
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><%= link_to "Songs", songs_path, class: "nav-link #{'active' if controller?('songs')}" %></li>
+        <li class="nav-item"><%= link_to "Translators", translators_path, class: "nav-link #{'active' if controller?('translators')}" %></li>
+        <li class="nav-item"><%= link_to "Languages", languages_path, class: "nav-link #{'active' if controller?('languages')}" %></li>
+        <li class="nav-item"><%= link_to "Genres", genres_path, class: "nav-link #{'active' if controller?('genres')}" %></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Info</a>
+          <ul class="dropdown-menu">
+            <li><%= link_to "About", about_path, class: "dropdown-item #{'active' if current_page?(about_path)}" %></li>
+            <li><%= link_to "Usage", usage_path, class: "dropdown-item #{'active' if current_page?(usage_path)}" %></li>
+            <li><%= link_to "Stats", stats_path, class: "dropdown-item #{'active' if current_page?(stats_path)}" %></li>
+            <li><%= link_to "Admin", inactive_translations_path, class: "dropdown-item #{'active' if current_page?(inactive_translations_path)}" %></li>
+          </ul>
+        </li>
       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+      <ul class="navbar-nav">
+        <% if user_signed_in? %>
+          <li class="nav-item"><span class="navbar-text me-2">User: <%= current_user.email %></span></li>
+          <li class="nav-item"><%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "nav-link" %></li>
+        <% else %>
+          <li class="nav-item"><%= link_to "Sign In", new_user_session_path, class: "nav-link" %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 </nav>

@@ -1,47 +1,50 @@
-version: '3'
-
+# Production stack for tangotranslations.org on the e2-micro VM.
+# Secrets live in .env next to this file (see .env.example).
+name: tangolyricsdb
 
 volumes:
-  postgres-vol: {}
+  postgres-18: {}
+  thruster-storage: {}
 
 services:
   db:
-    image: postgres
+    image: postgres:18.6-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - '5432:5432'
+      POSTGRES_USER: ttdb
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      POSTGRES_DB: ttdb_production
+    # Small footprint: the VM has 1 GB of RAM
+    command: postgres -c shared_buffers=64MB -c max_connections=20
     volumes:
-      - postgres-vol:/var/lib/postgresql/data
+      - postgres-18:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ttdb -d ttdb_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
-  # TODO: Find a way to get the Glyphicons and JS to work correctly with NGINX
-  nginx:
-    build:
-      context: ./rails_app
-      dockerfile: ../docker/nginx/Dockerfile
+  web:
+    build: ./rails_app
+    restart: unless-stopped
     depends_on:
-      - app
-    ports:
-      - 80:80
-      - 443:443
-
-  app:
-    build:
-      context: ./rails_app
-      dockerfile: ../docker/app/Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
-    depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      RAILS_ENV: ${RAILS_ENV}
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      WORKER_PROCESSES: 8
-      UNICORN_ADDRESS: 0.0.0.0:3000
-      GMAIL_DOMAIN: mail.google.com
-      GMAIL_USERNAME: ${GMAIL_USERNAME}
-      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
-    ports:
-      - 3000:3000
+      RAILS_ENV: production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE must be set in .env}
+      DB_HOST: db
+      DB_USER: ttdb
+      DB_PASSWORD: ${DB_PASSWORD}
+      GMAIL_USERNAME: ${GMAIL_USERNAME:-}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD:-}
+      # Redirect other host names (www., the bare IP is left alone) to this one
+      CANONICAL_HOST: ${CANONICAL_HOST:-}
+      # Comma-separated domains; when set, Thruster gets Let's Encrypt certificates and Rails forces HTTPS
+      TLS_DOMAIN: ${TLS_DOMAIN:-}
     volumes:
-      - ./rails_app:/var/www/ttdb
+      # Thruster keeps its TLS certificates here
+      - thruster-storage:/rails/storage
+    ports:
+      - "80:80"
+      - "443:443"

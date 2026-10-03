@@ -1,4 +1,4 @@
-class CreateTranslators < ActiveRecord::Migration
+class CreateTranslators < ActiveRecord::Migration[4.2]
   def change
     create_table :translators do |t|
       t.string :name
