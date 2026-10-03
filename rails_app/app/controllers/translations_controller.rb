@@ -3,6 +3,10 @@ class TranslationsController < ApplicationController
   
   before_action :set_translation, only: [:show, :edit, :update, :destroy, :check_link]
   before_action :authenticate_user!, except: [:index, :show, :create, :check_link]
+
+  # Anyone may add translations and re-check links; both make the server fetch a URL
+  rate_limit to: 20, within: 1.hour, only: :create
+  rate_limit to: 30, within: 10.minutes, only: :check_link
   
   def inactive
     @translations = Translation.includes([:translator, :language, :song]).where(active: [false, nil]).references(:song).order(['active', 'songs.title'])

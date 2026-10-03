@@ -4,6 +4,9 @@ Devise.setup do |config|
 
   require "devise/orm/active_record"
 
+  # Don't reveal whether an email address has an account
+  config.paranoid = true
+
   config.case_insensitive_keys = [ :email ]
   config.strip_whitespace_keys = [ :email ]
   config.skip_session_storage = [ :http_auth ]
@@ -18,4 +21,10 @@ Devise.setup do |config|
   # Turbo expects these statuses for failed form submissions and redirects.
   config.responder.error_status = :unprocessable_content
   config.responder.redirect_status = :see_other
+end
+
+# Slow down password guessing and reset-email abuse
+Rails.application.config.to_prepare do
+  Devise::SessionsController.rate_limit to: 10, within: 3.minutes, only: :create
+  Devise::PasswordsController.rate_limit to: 5, within: 1.hour, only: :create
 end

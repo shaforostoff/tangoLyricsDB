@@ -62,9 +62,8 @@ class AdminTest < ActionDispatch::IntegrationTest
   end
 
   test "refreshes the cached sidebar after a change" do
-    caching, cache = ActionController::Base.perform_caching, Rails.cache
+    caching = ActionController::Base.perform_caching
     ActionController::Base.perform_caching = true
-    Rails.cache = ActiveSupport::Cache::MemoryStore.new
 
     get root_path
     assert_select "#stats h4", "#{Song.count} songs"
@@ -72,7 +71,7 @@ class AdminTest < ActionDispatch::IntegrationTest
     get root_path
     assert_select "#stats h4", "#{Song.count} songs"
   ensure
-    ActionController::Base.perform_caching, Rails.cache = caching, cache
+    ActionController::Base.perform_caching = caching
   end
 
   test "signs out" do

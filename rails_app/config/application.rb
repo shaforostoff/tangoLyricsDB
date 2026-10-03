@@ -18,5 +18,8 @@ module TangoLyricsDB
     config.autoload_lib(ignore: %w[assets tasks])
 
     config.generators.system_tests = nil
+
+    # Don't advertise response times
+    config.middleware.delete Rack::Runtime
   end
 end

@@ -53,6 +53,24 @@ class PublicPagesTest < ActionDispatch::IntegrationTest
     assert_redirected_to song_path(songs(:one))
   end
 
+  test "sends a content security policy" do
+    get root_path
+    nonce = response.headers["Content-Security-Policy"][/script-src 'self' https:\/\/cdn\.jsdelivr\.net 'nonce-([^']+)'/, 1]
+    assert nonce.present?
+    assert_select "script[type=importmap][nonce=?]", nonce
+
+    get songs_path # Turbo visits keep the nonce of the first page
+    assert_select "script[type=importmap][nonce=?]", nonce
+    assert_nil response.headers["X-Runtime"]
+  end
+
+  test "rate limits sign-in attempts" do
+    10.times { post user_session_path, params: { user: { email: "x@example.com", password: "wrong-password" } } }
+    assert_response :unprocessable_content
+    post user_session_path, params: { user: { email: "x@example.com", password: "wrong-password" } }
+    assert_response :too_many_requests
+  end
+
   test "editing requires signing in" do
     get new_song_path
     assert_redirected_to new_user_session_path

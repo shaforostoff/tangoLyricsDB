@@ -1,6 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
-  # Cached fragments (the sidebar) show counts and latest entries; drop them on any change.
-  after_commit { Rails.cache.clear }
+  # The cached sidebar shows counts and latest entries; drop it on any change.
+  # (Only the sidebar: the same cache also holds the rate-limit counters.)
+  after_commit { Rails.cache.delete_matched(/sidebar/) }
 end

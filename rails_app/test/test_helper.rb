@@ -10,6 +10,9 @@ module ActiveSupport
     parallelize(workers: :number_of_processors)
 
     fixtures :all
+
+    # Rate-limit counters live in the cache
+    setup { Rails.cache.clear }
   end
 end
 
