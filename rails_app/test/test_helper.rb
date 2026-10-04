@@ -4,6 +4,7 @@ require "rails/test_help"
 
 # Saving a translation checks its link over HTTP; tests stay offline.
 UrlHelper.prepend(Module.new { def check_url(_url) = true })
+YoutubeHelper.prepend(Module.new { def youtube_channel(_video_id) = { id: "UCis-brfYCvVMy5MO3FPjo7Q", name: "Vincenzo Marino Tango DJ" } })
 
 module ActiveSupport
   class TestCase

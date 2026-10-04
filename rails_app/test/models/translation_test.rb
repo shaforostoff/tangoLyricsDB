@@ -70,4 +70,18 @@ class TranslationTest < ActiveSupport::TestCase
     @translation.save!
     assert_equal @translation.link, "http://www.google.com/red.html#anchor"
   end
+  test "should file a YouTube video under its channel and create the channel's translator" do
+    @translation.link = " https://youtu.be/sLZoSk4g6E8?t=30 "
+    assert_difference "Translator.count", 1 do
+      @translation.save!
+    end
+    assert_equal "https://www.youtube.com/channel/UCis-brfYCvVMy5MO3FPjo7Q/watch?v=sLZoSk4g6E8&t=30", @translation.link
+    assert_equal "Vincenzo Marino Tango Dj", @translation.translator.name
+
+    other = Translation.new(song_id: songs(:two).id, language_id: languages(:one).id, link: "https://www.youtube.com/watch?v=z7JmV_NPG60")
+    assert_no_difference "Translator.count" do
+      other.save!
+    end
+    assert_equal @translation.translator_id, other.translator_id
+  end
 end

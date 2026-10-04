@@ -1,6 +1,7 @@
 class Translation < ApplicationRecord
   include Filterable
   include UrlHelper
+  include YoutubeHelper
   
   belongs_to :song, counter_cache: true, optional: true
   belongs_to :language, counter_cache: true, optional: true
@@ -26,6 +27,7 @@ class Translation < ApplicationRecord
     
   # Callbacks
   before_validation :normalise_translation, on: [ :create, :update ]
+  before_validation :attach_youtube_channel, on: [ :create, :update ], if: :link_changed?
   after_validation :define_translator, :check_link
   
   def self.save_all
@@ -49,6 +51,21 @@ class Translation < ApplicationRecord
     end
   end
   
+  def attach_youtube_channel
+    # Store YouTube videos under their channel, so the channel's translator (created if new) is found
+    video_id, params = self.link.to_s.match(VIDEO_LINK)&.captures
+    return unless video_id
+
+    channel = youtube_channel(video_id)
+    return unless channel
+
+    channel_link = "https://www.youtube.com/channel/#{channel[:id]}"
+    self.link = "#{channel_link}/watch?v=#{video_id}#{"&#{params}" if params.present?}"
+    unless Translator.unscoped.where("site_link LIKE ?", "%youtube.com/channel/#{channel[:id]}%").exists?
+      Translator.create(name: channel[:name], site_name: "#{channel[:name]} (YouTube)", site_link: channel_link)
+    end
+  end
+
   def define_translator
     # Check which translator this translation belongs to
     @translators = Translator.all
