@@ -36,6 +36,23 @@ Leave `CANONICAL_HOST` and `TLS_DOMAIN` empty until DNS points at the VM; the si
 
 The database schema is created (or migrated) on start.
 
+### Update
+
+On the e2-micro (1 GB RAM) a rebuild pushes the running app into swap: it takes 20+ minutes
+and the site stops responding until it finishes. Rebuild only when it is needed
+(Gemfile, assets, Dockerfile, config or initializers changed).
+
+For changes to views, controllers, models or helpers, copy the files into the running
+container and restart it (a few seconds of downtime):
+
+    docker compose cp rails_app/app/views/layouts/_footer.html.erb web:/rails/app/views/layouts/
+    docker compose restart web
+
+Also copy the files into the checkout on the VM, so the next rebuild includes them.
+
+After changing data with `bin/rails runner`, restart `web` too: the sidebar stats are cached
+in the web process's memory, which the runner cannot clear.
+
 ### Restore a backup
 
     docker compose up -d db
